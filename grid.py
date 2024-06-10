@@ -83,12 +83,20 @@ def draw_moving_object(center):
     draw_sphere(0.3, 20, 20)  # Draw a solid sphere
     glPopMatrix()
 
+def resize_viewport(width, height):
+    glViewport(0, 0, width, height)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(45, (width / height), 0.1, 50.0)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    glTranslatef(0.0, 0.0, -20)
+
 def main():
     pygame.init()
     display = (800, 600)
-    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(0.0, 0.0, -20)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL | RESIZABLE)
+    resize_viewport(display[0], display[1])
     
     center_position = -grid_size/2 * spacing - 1
     end_position = grid_size/2 * spacing + 1
@@ -110,6 +118,9 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
+            elif event.type == VIDEORESIZE:
+                display = event.size
+                resize_viewport(display[0], display[1])
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     mouse_down = True
